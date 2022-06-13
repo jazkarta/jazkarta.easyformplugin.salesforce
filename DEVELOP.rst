@@ -5,9 +5,9 @@ Create a virtualenv in the package::
 
     $ virtualenv --clear .
 
-Install requirements with pip::
+Install zc.buildout with pip::
 
-    $ ./bin/pip install -r requirements.txt
+    $ ./bin/pip install zc.buildout
 
 Run buildout::
 
