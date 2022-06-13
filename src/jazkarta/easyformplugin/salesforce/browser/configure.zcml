@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="jazkarta.easyformplugin.salesforce">
+
+  <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
+  <include package="z3c.jbot" file="meta.zcml" />
+  <browser:jbot
+      directory="overrides"
+      layer="jazkarta.easyformplugin.salesforce.interfaces.IJazkartaEasyformpluginSalesforceLayer"
+      />
+
+  <!-- Publish static files -->
+  <plone:static
+      name="jazkarta.easyformplugin.salesforce"
+      type="plone"
+      directory="static"
+      />
+
+</configure>
