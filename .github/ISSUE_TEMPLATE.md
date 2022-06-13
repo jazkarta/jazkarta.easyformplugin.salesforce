@@ -1,7 +1,7 @@
-* jazkarta.easyformplugin.salesforce version:
-* Plone Version:
-* Python version:
-* Operating System: Linux
+- jazkarta.easyformplugin.salesforce version:
+- Plone Version:
+- Python version:
+- Operating System: Linux
 
 ### Description
 

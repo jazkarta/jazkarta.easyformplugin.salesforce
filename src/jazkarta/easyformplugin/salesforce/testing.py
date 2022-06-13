@@ -21,11 +21,12 @@ class JazkartaEasyformpluginSalesforceLayer(PloneSandboxLayer):
         # The z3c.autoinclude feature is disabled in the Plone fixture base
         # layer.
         import plone.restapi
+
         self.loadZCML(package=plone.restapi)
         self.loadZCML(package=jazkarta.easyformplugin.salesforce)
 
     def setUpPloneSite(self, portal):
-        applyProfile(portal, 'jazkarta.easyformplugin.salesforce:default')
+        applyProfile(portal, "jazkarta.easyformplugin.salesforce:default")
 
 
 JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FIXTURE = JazkartaEasyformpluginSalesforceLayer()
@@ -33,13 +34,13 @@ JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FIXTURE = JazkartaEasyformpluginSalesforceLay
 
 JAZKARTA_EASYFORMPLUGIN_SALESFORCE_INTEGRATION_TESTING = IntegrationTesting(
     bases=(JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FIXTURE,),
-    name='JazkartaEasyformpluginSalesforceLayer:IntegrationTesting',
+    name="JazkartaEasyformpluginSalesforceLayer:IntegrationTesting",
 )
 
 
 JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FIXTURE,),
-    name='JazkartaEasyformpluginSalesforceLayer:FunctionalTesting',
+    name="JazkartaEasyformpluginSalesforceLayer:FunctionalTesting",
 )
 
 
@@ -49,5 +50,5 @@ JAZKARTA_EASYFORMPLUGIN_SALESFORCE_ACCEPTANCE_TESTING = FunctionalTesting(
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
         z2.ZSERVER_FIXTURE,
     ),
-    name='JazkartaEasyformpluginSalesforceLayer:AcceptanceTesting',
+    name="JazkartaEasyformpluginSalesforceLayer:AcceptanceTesting",
 )

@@ -3,4 +3,4 @@
 from zope.i18nmessageid import MessageFactory
 
 
-_ = MessageFactory('jazkarta.easyformplugin.salesforce')
+_ = MessageFactory("jazkarta.easyformplugin.salesforce")
