@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
 <rolemap>
   <permissions>
-  <!-- -*- extra stuff goes here -*- -->
+  
+    <permission acquire="True"
+                name="jazkarta.easyformplugin.salesforce: Add Salesforce Actions">
+      <role name="Manager" />
+      <role name="Owner" />
+      <role name="Site Administrator" />
+    </permission>
 
   </permissions>
 </rolemap>

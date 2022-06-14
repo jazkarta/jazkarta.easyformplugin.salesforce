@@ -3,10 +3,9 @@
   xmlns:zcml="http://namespaces.zope.org/zcml"
   i18n_domain="plone">
 
-  <configure zcml:condition="installed AccessControl.security">
-  <!-- -*- extra stuff goes here -*- -->
-
-
-  </configure>
+  <permission
+    id="jazkarta.easyformplugin.salesforce.AddSalesforceActions"
+    title="jazkarta.easyformplugin.salesforce: Add Salesforce Actions"
+    />
 
 </configure>

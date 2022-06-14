@@ -51,10 +51,8 @@ setup(
     install_requires=[
         "setuptools",
         # -*- Extra requirements: -*-
-        "z3c.jbot",
-        "plone.api>=1.8.4",
-        "plone.restapi < 8.0.0",
-        "plone.app.dexterity",
+        "collective.easyform",
+        "Products.salesforcebaseconnector",
     ],
     extras_require={
         "test": [
