@@ -6,7 +6,7 @@ from jazkarta.easyformplugin.salesforce.testing import (
 )
 from plone import api
 from plone.app.testing import SITE_OWNER_NAME, SITE_OWNER_PASSWORD
-from plone.testing.zope import Browser
+from plone.testing.z2 import Browser
 
 import json
 import unittest
