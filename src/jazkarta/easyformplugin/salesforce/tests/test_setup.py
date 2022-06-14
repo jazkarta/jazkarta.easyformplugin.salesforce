@@ -30,6 +30,7 @@ class TestSetup(unittest.TestCase):
 
     def test_product_installed(self):
         """Test if jazkarta.easyformplugin.salesforce is installed."""
+        self.assertTrue(self.installer.isProductInstalled("collective.easyform"))
         self.assertTrue(
             self.installer.isProductInstalled("jazkarta.easyformplugin.salesforce")
         )
