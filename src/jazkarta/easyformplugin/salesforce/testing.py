@@ -8,6 +8,7 @@ from plone.app.testing import (
     PloneSandboxLayer,
 )
 from plone.testing import z2
+from plone.testing.zope import installProduct
 
 import jazkarta.easyformplugin.salesforce
 
@@ -20,10 +21,11 @@ class JazkartaEasyformpluginSalesforceLayer(PloneSandboxLayer):
         # Load any other ZCML that is required for your tests.
         # The z3c.autoinclude feature is disabled in the Plone fixture base
         # layer.
-
+        installProduct(app, "Products.salesforcebaseconnector")
         self.loadZCML(package=jazkarta.easyformplugin.salesforce)
 
     def setUpPloneSite(self, portal):
+        portal.manage_addProduct['salesforcebaseconnector'].manage_addTool('Salesforce Base Connector', None)
         applyProfile(portal, "jazkarta.easyformplugin.salesforce:default")
 
 

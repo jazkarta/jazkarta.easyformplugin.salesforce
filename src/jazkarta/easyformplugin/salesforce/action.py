@@ -33,7 +33,6 @@ class SendToSalesforce(Action):
         for operation in self.operations:
             sobject = operation["sobject"]
             data = self.prepare_salesforce_data(sobject, operation["fields"], fields, expr_context)
-            import pdb; pdb.set_trace()
             op_name = operation["operation"]
             if op_name == "create":
                 result = sf.create(data)[0]

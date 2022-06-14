@@ -3,6 +3,7 @@
 
 from setuptools import find_packages
 from setuptools import setup
+import sys
 
 
 long_description = "\n\n".join(
@@ -12,6 +13,18 @@ long_description = "\n\n".join(
         open("CHANGES.rst").read(),
     ]
 )
+
+test_requirements = [
+    "plone.app.testing",
+    # Plone KGS does not use this version, because it would break
+    # Remove if your package shall be part of coredev.
+    # plone_coredev tests as of 2016-04-01.
+    "plone.testing>=5.0.0",
+    "plone.app.contenttypes",
+    "plone.app.robotframework[debug]",
+]
+if sys.version_info < (3,):
+    test_requirements += ["mock"]
 
 
 setup(
@@ -55,15 +68,7 @@ setup(
         "Products.salesforcebaseconnector",
     ],
     extras_require={
-        "test": [
-            "plone.app.testing",
-            # Plone KGS does not use this version, because it would break
-            # Remove if your package shall be part of coredev.
-            # plone_coredev tests as of 2016-04-01.
-            "plone.testing>=5.0.0",
-            "plone.app.contenttypes",
-            "plone.app.robotframework[debug]",
-        ],
+        "test": test_requirements,
     },
     entry_points="""
     [z3c.autoinclude.plugin]
