@@ -36,7 +36,7 @@ class SendToSalesforce(Action):
     def onSuccess(self, fields, request):
         form = self.get_form()
         expr_context = getExprContext(form, form)
-        sf = Salesforce(**SF_CREDENTIALS)
+        sf = Salesforce(**SF_CREDENTIALS, version="55.0")
 
         for operation in self.operations:
             sobject_name = operation["sobject"]
