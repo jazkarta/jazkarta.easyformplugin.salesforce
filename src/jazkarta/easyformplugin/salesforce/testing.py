@@ -75,6 +75,7 @@ def scrub_login_response(response):
 
 vcr = vcr.VCR(
     cassette_library_dir=os.path.dirname(__file__) + "/tests/cassettes",
+    serializer="json",
     before_record_request=scrub_login_request,
     before_record_response=scrub_login_response,
     decode_compressed_response=True,
