@@ -1,4 +1,5 @@
 import logging
+import os
 
 from collective.easyform.actions import Action, ActionFactory
 from collective.easyform.api import get_context, get_expression
@@ -6,6 +7,7 @@ from DateTime import DateTime
 from plone.supermodel.exportimport import BaseHandler
 from Products.CMFCore.Expression import Expression, getExprContext
 from Products.CMFCore.utils import getToolByName
+from simple_salesforce import Salesforce
 from zope.interface import implementer
 
 from . import _
@@ -13,6 +15,12 @@ from .interfaces import ISaveToSalesforce
 
 logger = logging.getLogger(__name__)
 
+SF_CREDENTIALS = {
+    "username": os.environ.get("SALESFORCE_USERNAME"),
+    "password": os.environ.get("SALESFORCE_PASSWORD"),
+    "security_token": os.environ.get("SALESFORCE_TOKEN"),
+    "domain": os.environ.get("SALESFORCE_DOMAIN"),
+}
 
 @implementer(ISaveToSalesforce)
 class SendToSalesforce(Action):
@@ -28,25 +36,25 @@ class SendToSalesforce(Action):
     def onSuccess(self, fields, request):
         form = self.get_form()
         expr_context = getExprContext(form, form)
-        sf = getToolByName(form, "portal_salesforcebaseconnector")
+        sf = Salesforce(**SF_CREDENTIALS)
 
         for operation in self.operations:
-            sobject = operation["sobject"]
-            data = self.prepare_salesforce_data(sobject, operation["fields"], fields, expr_context)
+            sobject_name = operation["sobject"]
+            data = self.prepare_salesforce_data(operation["fields"], fields, expr_context)
+            sobject = getattr(sf, sobject_name)
             op_name = operation["operation"]
             if op_name == "create":
-                result = sf.create(data)[0]
+                result = sobject.create(data)
                 if result["success"]:
                     sf_id = result["id"]
-                    logger.info(u"Created {} {} in Salesforce".format(sobject, sf_id))
+                    logger.info(u"Created {} {} in Salesforce".format(sobject_name, sf_id))
                 else:
-                    err = result["errors"][0]["message"]
-                    raise Exception(u"Failed to create {} in Salesforce: {}".format(sobject, err))
+                    raise Exception(u"Failed to create {} in Salesforce: {}".format(sobject_name, result["errors"]))
             else:
                 raise ValueError("Unsupported operation: {}".format(operation))
 
-    def prepare_salesforce_data(self, sobject, fields, form_input, expr_context):
-        """Collect data for one Salesforce object in the format expected by salesforcebaseconnector
+    def prepare_salesforce_data(self, fields, form_input, expr_context):
+        """Collect data for one Salesforce object in the format expected by simple-salesforce
 
         sobject - API name (developer name) of the sObject in Salesforce
         fields - mapping from Salesforce field name to an expression for calculating the value
@@ -57,7 +65,7 @@ class SendToSalesforce(Action):
 
         * "form:name" - Get the value that was entered in the form input called "name"
         """
-        data = {"type": sobject}
+        data = {}
         for sf_fieldname, value in fields.items():
             expr = None
             if value.startswith("form:"):

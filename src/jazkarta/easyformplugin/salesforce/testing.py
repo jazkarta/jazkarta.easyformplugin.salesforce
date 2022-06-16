@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+import re
+
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import (
@@ -8,6 +11,7 @@ from plone.app.testing import (
     PloneSandboxLayer,
 )
 from plone.testing import z2
+import vcr
 
 import jazkarta.easyformplugin.salesforce
 
@@ -20,11 +24,9 @@ class JazkartaEasyformpluginSalesforceLayer(PloneSandboxLayer):
         # Load any other ZCML that is required for your tests.
         # The z3c.autoinclude feature is disabled in the Plone fixture base
         # layer.
-        z2.installProduct(app, "Products.salesforcebaseconnector")
         self.loadZCML(package=jazkarta.easyformplugin.salesforce)
 
     def setUpPloneSite(self, portal):
-        portal.manage_addProduct['salesforcebaseconnector'].manage_addTool('Salesforce Base Connector', None)
         applyProfile(portal, "jazkarta.easyformplugin.salesforce:default")
 
 
@@ -50,4 +52,31 @@ JAZKARTA_EASYFORMPLUGIN_SALESFORCE_ACCEPTANCE_TESTING = FunctionalTesting(
         z2.ZSERVER_FIXTURE,
     ),
     name="JazkartaEasyformpluginSalesforceLayer:AcceptanceTesting",
+)
+
+
+def scrub_login_request(request):
+    request.body = re.sub(
+        r"<n1:(username|password)>.*?</n1:\1>",
+        lambda m: "<n1:" + m.group(1) + ">REDACTED</n1:" + m.group(1) + ">",
+        request.body,
+    )
+    return request
+
+
+def scrub_login_response(response):
+    response["body"]["string"] = re.sub(
+        r"<sessionId>.*?</sessionId>",
+        "<sessionId>FAKE_SESSION</sessionId>",
+        response["body"]["string"],
+    )
+    return response
+
+
+vcr = vcr.VCR(
+    cassette_library_dir=os.path.dirname(__file__) + "/tests/cassettes",
+    before_record_request=scrub_login_request,
+    before_record_response=scrub_login_response,
+    decode_compressed_response=True,
+    filter_headers=["authorization"],
 )

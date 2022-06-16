@@ -14,7 +14,12 @@ long_description = "\n\n".join(
     ]
 )
 
-test_requirements = [
+install_requires = [
+    "setuptools",
+    # -*- Extra requirements: -*-
+    "collective.easyform",
+]
+test_requires = [
     "plone.app.testing",
     # Plone KGS does not use this version, because it would break
     # Remove if your package shall be part of coredev.
@@ -23,9 +28,13 @@ test_requirements = [
     "plone.app.contenttypes",
     "plone.app.robotframework[debug]",
 ]
+# We need old versions of some dependencies to support Python 2
 if sys.version_info < (3,):
-    test_requirements += ["mock"]
-
+    install_requires += ["Authlib<1", "simple-salesforce<1"]
+    test_requires += ["vcrpy<4"]
+else:
+    install_requires += ["simple-salesforce"]
+    test_requires += ["vcrpy"]
 
 setup(
     name="jazkarta.easyformplugin.salesforce",
@@ -61,14 +70,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
-    install_requires=[
-        "setuptools",
-        # -*- Extra requirements: -*-
-        "collective.easyform",
-        "Products.salesforcebaseconnector",
-    ],
+    install_requires=install_requires,
     extras_require={
-        "test": test_requirements,
+        "test": test_requires,
     },
     entry_points="""
     [z3c.autoinclude.plugin]
