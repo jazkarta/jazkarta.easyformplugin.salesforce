@@ -82,5 +82,5 @@ class TestIntegration(unittest.TestCase):
             browser.getControl("Submit").click()
 
         self.assertEqual(len(cassette), 2)
-        assert cassette.requests[-1].body == json.dumps({"LastName": "McTesterson"})
+        assert json.loads(cassette.requests[-1].body) == {"LastName": "McTesterson"}
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]
