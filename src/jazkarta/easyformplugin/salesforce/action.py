@@ -20,6 +20,7 @@ SF_CREDENTIALS = {
     "password": os.environ.get("SALESFORCE_PASSWORD"),
     "security_token": os.environ.get("SALESFORCE_TOKEN"),
     "domain": os.environ.get("SALESFORCE_DOMAIN"),
+    "version": "55.0",
 }
 
 @implementer(ISaveToSalesforce)
@@ -36,7 +37,7 @@ class SendToSalesforce(Action):
     def onSuccess(self, fields, request):
         form = self.get_form()
         expr_context = getExprContext(form, form)
-        sf = Salesforce(**SF_CREDENTIALS, version="55.0")
+        sf = Salesforce(**SF_CREDENTIALS)
 
         for operation in self.operations:
             sobject_name = operation["sobject"]
