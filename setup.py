@@ -30,8 +30,8 @@ test_requires = [
 ]
 # We need old versions of some dependencies to support Python 2
 if sys.version_info < (3,):
-    install_requires += ["Authlib<1", "cryptography<3.4", "simple-salesforce<1"]
-    test_requires += ["PyYAML<6", "vcrpy<4"]
+    install_requires += ["Authlib<1", "simple-salesforce<1"]
+    test_requires += ["vcrpy<4"]
 else:
     install_requires += ["simple-salesforce"]
     test_requires += ["vcrpy"]
