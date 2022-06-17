@@ -25,6 +25,20 @@ SF_CREDENTIALS = {
 
 @implementer(ISaveToSalesforce)
 class SendToSalesforce(Action):
+    """easyform action which creates or updates a record in Salesforce
+
+    Configured with one field, `operations`, which is a JSON list of operations to perform.
+    Each operation specifies:
+    * sobject - name of the Salesforce sObject
+    * operation - what operation to perform (`create` is currently the only supported operation)
+    * fields - a mapping of Salesforce field names to expressions.
+
+    Each field expression can be one of:
+    * "form:x" -- value of the form field named `x`
+    * "path:x" -- a TALES path expression
+    * "python:x" -- a TALES Python expression
+    * "string:x" -- a TALES string expression
+    """
 
     def __init__(self, **kw):
         for name, field in ISaveToSalesforce.namesAndDescriptions():
@@ -35,6 +49,10 @@ class SendToSalesforce(Action):
         return get_context(self)
 
     def onSuccess(self, fields, request):
+        """Call Salesforce after a valid form submission.
+
+        `fields` contains a mapping of the extracted form data.
+        """
         form = self.get_form()
         expr_context = getExprContext(form, form)
         sf = Salesforce(**SF_CREDENTIALS)
@@ -61,10 +79,6 @@ class SendToSalesforce(Action):
         fields - mapping from Salesforce field name to an expression for calculating the value
         request - the request object containing submitted form data
         expr_context - CMFCore expression context for evaluating TALES expressions
-
-        Several types of expression are supported:
-
-        * "form:name" - Get the value that was entered in the form input called "name"
         """
         data = {}
         for sf_fieldname, value in fields.items():
@@ -82,6 +96,7 @@ class SendToSalesforce(Action):
         return data
 
 
+# Action factory used by the UI for adding a new easyform action
 SendToSalesforceAction = ActionFactory(
     SendToSalesforce,
     _(u"label_salesforce_action", default=u"Send to Salesforce"),
@@ -89,4 +104,5 @@ SendToSalesforceAction = ActionFactory(
 )
 
 
+# Supermodel handler for serializing the action configuration to an XML model
 SendToSalesforceHandler = BaseHandler(SendToSalesforce)
