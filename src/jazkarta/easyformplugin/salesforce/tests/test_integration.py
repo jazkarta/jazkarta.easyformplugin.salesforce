@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 """Setup tests for this package."""
 from collective.easyform.tests.testDocTests import get_browser
+from datetime import date
+from dateutil.parser import parse
 from jazkarta.easyformplugin.salesforce.testing import (
     JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FUNCTIONAL_TESTING,  # noqa: E501,
     vcr,
 )
 from plone import api
-from plone.app.testing import SITE_OWNER_NAME, SITE_OWNER_PASSWORD
+from plone.app.testing import setRoles, TEST_USER_ID, TEST_USER_NAME, TEST_USER_PASSWORD
 from plone.testing.z2 import Browser
+import transaction
 
 import json
 import unittest
@@ -24,63 +27,90 @@ class TestIntegration(unittest.TestCase):
 
     layer = JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FUNCTIONAL_TESTING
 
-    def test_submit_form_with_salesforce_adapter(self):
-        browser = Browser(self.layer["app"])
-        browser.addHeader("Authorization", "Basic {}:{}".format(SITE_OWNER_NAME, SITE_OWNER_PASSWORD))
-        browser.handleErrors = False
-
+    def setUp(self):
         # Create a form
-        portal_url = self.layer["portal"].absolute_url()
-        browser.open(portal_url)
-        browser.getLink("EasyForm").click()
-        browser.getControl("Title").value = "sftest"
-        browser.getControl("Save").click()
+        portal = self.layer["portal"]
+        setRoles(portal, TEST_USER_ID, ["Manager"])
+        portal.invokeFactory("Folder", "test-folder")
+        folder = portal["test-folder"]
+        folder.invokeFactory("EasyForm", "test-form")
+        self.form = folder["test-form"]
+        self.form.fields_model = """<model xmlns:easyform="http://namespaces.plone.org/supermodel/easyform" xmlns:form="http://namespaces.plone.org/supermodel/form" xmlns:i18n="http://xml.zope.org/namespaces/i18n" xmlns:lingua="http://namespaces.plone.org/supermodel/lingua" xmlns:marshal="http://namespaces.plone.org/supermodel/marshal" xmlns:security="http://namespaces.plone.org/supermodel/security" xmlns:users="http://namespaces.plone.org/supermodel/users" xmlns="http://namespaces.plone.org/supermodel/schema">
+  <schema>
+    <field name="first_name" type="zope.schema.TextLine">
+      <description/>
+      <required>False</required>
+      <title>First Name</title>
+    </field>
+    <field name="last_name" type="zope.schema.TextLine">
+      <description/>
+      <title>Last Name</title>
+    </field>
+    <field name="do_not_call" type="zope.schema.Bool">
+      <description/>
+      <required>False</required>
+      <title>Do Not Call</title>
+      <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
+    </field>
+    <field name="birthdate" type="zope.schema.Date">
+      <description/>
+      <required>False</required>
+      <title>Birthdate</title>
+    </field>
+  </schema>
+</model>"""
+        self.form.actions_model = None
+        transaction.commit()
 
-        # Delete the default fields
-        browser.getLink("Define form fields").click()
-        browser.getLink(url="/replyto/@@delete").click()
-        browser.goBack()
-        browser.getLink(url="/topic/@@delete").click()
-        browser.goBack()
-        browser.getLink(url="/comments/@@delete").click()
-
-        # Add last name field
-        browser.goBack()
-        browser.getLink(id="add-field").click()
-        browser.getControl("Title").value = "Last Name"
-        browser.getControl("Short Name").value = "last_name"
-        browser.getControl("String").selected = True
-        browser.getControl("Add").click()
-
-        # Delete the default mailer action
-        browser.open(portal_url + "/sftest/actions")
-        browser.getLink(url="/mailer/@@delete").click()
+    def test_submit_form_with_salesforce_adapter(self):
+        # Open browser
+        browser = Browser(self.layer["app"])
+        browser.addHeader("Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD))
+        browser.handleErrors = False
+        form_url = self.form.absolute_url()
 
         # Add a Salesforce action
-        browser.open(portal_url + "/sftest/actions/@@add-action")
-        browser.getControl("Title").value = "Salesforce"
-        browser.getControl("Short Name").value = "salesforce"
+        browser.open(form_url + "/actions/@@add-action")
+        browser.getControl("Title").value = "Create Salesforce Contact"
+        browser.getControl("Short Name").value = "sf_contact"
         browser.getControl("Send to Salesforce").selected = True
         browser.getControl("Add").click()
-        browser.open(portal_url + "/sftest/actions/salesforce")
+        browser.open(form_url + "/actions/sf_contact")
         browser.getControl("Operations").value = json.dumps([
             {
-                "operation": "create",
                 "sobject": "Contact",
+                "operation": "create",
                 "fields": {
-                    "LastName": "form:last_name"
-                }
-            }
+                    "Description": "Created by jazkarta.easyformplugin.salesforce tests",
+                    "FirstName": "form:first_name",
+                    "LastName": "form:last_name",
+                    "Birthdate": "form:birthdate",
+                    "CreatedDate": "python:now",
+                    "DoNotCall": "form:do_not_call"
+                },
+            },
         ])
         browser.getControl("Save").click()
 
         # Fill and submit the form
-        browser.open(portal_url + "/sftest")
+        browser.open(form_url)
+        # first name intentionally left blank
         browser.getControl("Last Name").value = "McTesterson"
+        browser.getControl("yes").selected = True
+        browser.getControl(name="form.widgets.birthdate").value = "1985-09-30"
 
         with vcr.use_cassette("basic.yaml") as cassette:
             browser.getControl("Submit").click()
 
         self.assertEqual(len(cassette), 2)
-        assert json.loads(cassette.requests[-1].body) == {"LastName": "McTesterson"}
+        actual_data = json.loads(cassette.requests[-1].body)
+        assert set(actual_data.keys()) == {"FirstName", "LastName", "Birthdate", "CreatedDate", "DoNotCall", "Description"}
+        assert actual_data["FirstName"] is None
+        assert actual_data["LastName"] == "McTesterson"
+        assert actual_data["DoNotCall"] == True
+        assert actual_data["Birthdate"] == "1985-09-30"
+        created_date = parse(actual_data["CreatedDate"])
+        assert created_date.tzinfo is not None
+        assert created_date.date() == date.today()
+        assert actual_data["Description"] == "Created by jazkarta.easyformplugin.salesforce tests"
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]

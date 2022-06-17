@@ -1,12 +1,13 @@
+from datetime import date, datetime
+import json
 import logging
 import os
 
 from collective.easyform.actions import Action, ActionFactory
 from collective.easyform.api import get_context, get_expression
 from DateTime import DateTime
+from plone.app.event.base import default_timezone
 from plone.supermodel.exportimport import BaseHandler
-from Products.CMFCore.Expression import Expression, getExprContext
-from Products.CMFCore.utils import getToolByName
 from simple_salesforce import Salesforce
 from zope.interface import implementer
 
@@ -54,12 +55,12 @@ class SendToSalesforce(Action):
         `fields` contains a mapping of the extracted form data.
         """
         form = self.get_form()
-        expr_context = getExprContext(form, form)
         sf = Salesforce(**SF_CREDENTIALS)
 
         for operation in self.operations:
             sobject_name = operation["sobject"]
-            data = self.prepare_salesforce_data(operation["fields"], fields, expr_context)
+            data = self.prepare_salesforce_data(operation["fields"], fields, form)
+            logger.info(json.dumps(data, indent=4))
             sobject = getattr(sf, sobject_name)
             op_name = operation["operation"]
             if op_name == "create":
@@ -78,10 +79,11 @@ class SendToSalesforce(Action):
         sobject - API name (developer name) of the sObject in Salesforce
         fields - mapping from Salesforce field name to an expression for calculating the value
         request - the request object containing submitted form data
-        expr_context - CMFCore expression context for evaluating TALES expressions
+        expr_context - context object for evaluating TALES expressions
         """
         data = {}
         for sf_fieldname, value in fields.items():
+            # evaluate expressions
             expr = None
             if value.startswith("form:"):
                 form_fieldname = value[5:]
@@ -92,6 +94,16 @@ class SendToSalesforce(Action):
                 expr = value
             if expr is not None:
                 value = get_expression(expr_context, expr, now=DateTime().ISO8601())
+
+            if isinstance(value, datetime):
+                # convert to timezone-aware datetime if necessary
+                if value.tzinfo is None:
+                    tzinfo = default_timezone(as_tzinfo=True)
+                    value = tzinfo.localize(value)
+            if isinstance(value, (date, datetime)):
+                # serialize dates and datetimes (not handled by json.dumps)
+                value = value.isoformat()
+
             data[sf_fieldname] = value
         return data
 
