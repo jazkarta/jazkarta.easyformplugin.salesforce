@@ -43,7 +43,7 @@ class ISaveToSalesforce(IAction):
             }
         }
     ]
-""")
+"""),
         defaultFactory=list,
         schema=json.dumps({
             "type": "array",
