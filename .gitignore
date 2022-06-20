@@ -19,6 +19,7 @@ dist/*
 test.plone_addon/
 var/
 # files
+.envrc
 .installed.cfg
 .mr.developer.cfg
 lib64

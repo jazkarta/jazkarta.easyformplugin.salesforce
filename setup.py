@@ -3,6 +3,7 @@
 
 from setuptools import find_packages
 from setuptools import setup
+import sys
 
 
 long_description = "\n\n".join(
@@ -12,7 +13,6 @@ long_description = "\n\n".join(
         open("CHANGES.rst").read(),
     ]
 )
-
 
 setup(
     name="jazkarta.easyformplugin.salesforce",
@@ -50,11 +50,10 @@ setup(
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
     install_requires=[
         "setuptools",
-        # -*- Extra requirements: -*-
-        "z3c.jbot",
-        "plone.api>=1.8.4",
-        "plone.restapi < 8.0.0",
-        "plone.app.dexterity",
+        'Authlib<1; python_version<"3"',
+        'simple-salesforce<1; python_version<"3"',
+        "simple-salesforce",
+        "collective.easyform",
     ],
     extras_require={
         "test": [
@@ -65,6 +64,8 @@ setup(
             "plone.testing>=5.0.0",
             "plone.app.contenttypes",
             "plone.app.robotframework[debug]",
+            'vcrpy<4; python_version<"3"',
+            "vcrpy",
         ],
     },
     entry_points="""

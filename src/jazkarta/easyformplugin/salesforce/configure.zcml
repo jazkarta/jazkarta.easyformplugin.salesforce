@@ -12,6 +12,7 @@
     Better import explicit packages or configurations ;)
   -->
   <!--<includeDependencies package="." />-->
+  <include package="collective.easyform" />
 
   <include package=".browser" />
 
@@ -40,6 +41,14 @@
       name="jazkarta.easyformplugin.salesforce-hiddenprofiles"
       />
 
-  <!-- -*- extra stuff goes here -*- -->
+  <utility
+      component=".action.SendToSalesforceAction"
+      name="jazkarta.easyformplugin.salesforce.action.SendToSalesforce"
+      />
+
+  <utility
+      component=".action.SendToSalesforceHandler"
+      name="jazkarta.easyformplugin.salesforce.action.SendToSalesforce"
+      />
 
 </configure>
