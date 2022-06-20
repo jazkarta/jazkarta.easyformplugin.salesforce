@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Setup tests for this package."""
 from collective.easyform.tests.testDocTests import get_browser
-from datetime import date
+from datetime import datetime
 from dateutil.parser import parse
 from jazkarta.easyformplugin.salesforce.testing import (
     JAZKARTA_EASYFORMPLUGIN_SALESFORCE_FUNCTIONAL_TESTING,  # noqa: E501,
@@ -110,7 +110,7 @@ class TestIntegration(unittest.TestCase):
         assert actual_data["DoNotCall"] == True
         assert actual_data["Birthdate"] == "1985-09-30"
         created_date = parse(actual_data["CreatedDate"])
+        assert isinstance(created_date, datetime)
         assert created_date.tzinfo is not None
-        self.assertEqual(created_date.date(), date.today())
         assert actual_data["Description"] == "Created by jazkarta.easyformplugin.salesforce tests"
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]
