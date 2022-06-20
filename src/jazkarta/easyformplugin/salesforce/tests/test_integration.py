@@ -111,6 +111,6 @@ class TestIntegration(unittest.TestCase):
         assert actual_data["Birthdate"] == "1985-09-30"
         created_date = parse(actual_data["CreatedDate"])
         assert created_date.tzinfo is not None
-        assert created_date.date() == date.today()
+        self.assertEqual(created_date.date(), date.today())
         assert actual_data["Description"] == "Created by jazkarta.easyformplugin.salesforce tests"
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]
