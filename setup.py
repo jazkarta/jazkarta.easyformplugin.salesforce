@@ -14,28 +14,6 @@ long_description = "\n\n".join(
     ]
 )
 
-install_requires = [
-    "setuptools",
-    # -*- Extra requirements: -*-
-    "collective.easyform",
-]
-test_requires = [
-    "plone.app.testing",
-    # Plone KGS does not use this version, because it would break
-    # Remove if your package shall be part of coredev.
-    # plone_coredev tests as of 2016-04-01.
-    "plone.testing>=5.0.0",
-    "plone.app.contenttypes",
-    "plone.app.robotframework[debug]",
-]
-# We need old versions of some dependencies to support Python 2
-if sys.version_info < (3,):
-    install_requires += ["Authlib<1", "simple-salesforce<1"]
-    test_requires += ["vcrpy<4"]
-else:
-    install_requires += ["simple-salesforce"]
-    test_requires += ["vcrpy"]
-
 setup(
     name="jazkarta.easyformplugin.salesforce",
     version="1.0a1",
@@ -70,9 +48,25 @@ setup(
     include_package_data=True,
     zip_safe=False,
     python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
-    install_requires=install_requires,
+    install_requires=[
+        "setuptools",
+        'Authlib<1; python_version<"3"',
+        'simple-salesforce<1; python_version<"3"',
+        "simple-salesforce",
+        "collective.easyform",
+    ],
     extras_require={
-        "test": test_requires,
+        "test": [
+            "plone.app.testing",
+            # Plone KGS does not use this version, because it would break
+            # Remove if your package shall be part of coredev.
+            # plone_coredev tests as of 2016-04-01.
+            "plone.testing>=5.0.0",
+            "plone.app.contenttypes",
+            "plone.app.robotframework[debug]",
+            'vcrpy<4; python_version<"3"',
+            "vcrpy",
+        ],
     },
     entry_points="""
     [z3c.autoinclude.plugin]
