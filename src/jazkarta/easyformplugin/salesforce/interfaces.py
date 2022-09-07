@@ -4,13 +4,13 @@
 import json
 
 from collective.easyform.interfaces.actions import MODIFY_PORTAL_CONTENT, IAction
+from collective.easyform.interfaces import IEasyFormLayer
 from plone.autoform import directives
 from plone.schema.jsonfield import JSONField
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 from . import _
 
-class IJazkartaEasyformpluginSalesforceLayer(IDefaultBrowserLayer):
+class IJazkartaEasyformpluginSalesforceLayer(IEasyFormLayer):
     """Marker interface that defines a browser layer."""
 
 
@@ -56,7 +56,8 @@ class ISaveToSalesforce(IAction):
                 ],
                 "properties": {
                     "sobject": {"type": "string"},
-                    "operation": {"type": "string", "enum": ["create"]},
+                    "operation": {"type": "string", "enum": ["create", "update"]},
+                    "match_expression": {"type": "string"},
                     "fields": {
                         "type": "object",
                         "additionalProperties": {

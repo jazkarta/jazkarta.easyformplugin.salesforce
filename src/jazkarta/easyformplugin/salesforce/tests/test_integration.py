@@ -50,7 +50,6 @@ class TestIntegration(unittest.TestCase):
       <description/>
       <required>False</required>
       <title>Do Not Call</title>
-      <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
     </field>
     <field name="birthdate" type="zope.schema.Date">
       <description/>
@@ -62,7 +61,7 @@ class TestIntegration(unittest.TestCase):
         self.form.actions_model = None
         transaction.commit()
 
-    def test_submit_form_with_salesforce_adapter(self):
+    def test_01_submit_form_with_salesforce_adapter(self):
         # Open browser
         browser = Browser(self.layer["app"])
         browser.addHeader("Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD))
@@ -96,7 +95,7 @@ class TestIntegration(unittest.TestCase):
         browser.open(form_url)
         # first name intentionally left blank
         browser.getControl("Last Name").value = "McTesterson"
-        browser.getControl("yes").selected = True
+        browser.getControl("Do Not Call").selected = True
         browser.getControl(name="form.widgets.birthdate").value = "1985-09-30"
 
         with vcr.use_cassette("basic.yaml") as cassette:
@@ -114,3 +113,49 @@ class TestIntegration(unittest.TestCase):
         assert created_date.tzinfo is not None
         assert actual_data["Description"] == "Created by jazkarta.easyformplugin.salesforce tests"
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]
+
+    def test_02_prefill_form_from_salesforce(self):
+        # Note: when running without the vcr cassette,
+        # this test uses the Contact that was added to Salesforce
+        # in the preceding test.
+
+        # Open browser
+        browser = Browser(self.layer["app"])
+        browser.addHeader("Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD))
+        browser.handleErrors = False
+        form_url = self.form.absolute_url()
+
+        # Add a Salesforce action
+        browser.open(form_url + "/actions/@@add-action")
+        browser.getControl("Title").value = "Update Salesforce Contact"
+        browser.getControl("Short Name").value = "sf_contact"
+        browser.getControl("Send to Salesforce").selected = True
+        browser.getControl("Add").click()
+        browser.open(form_url + "/actions/sf_contact")
+        browser.getControl("Operations").value = json.dumps([
+            {
+                "sobject": "Contact",
+                "operation": "update",
+                "match_expression": "LastName = 'McTesterson'",
+                "fields": {
+                    "Description": "Created by jazkarta.easyformplugin.salesforce tests",
+                    "FirstName": "form:first_name",
+                    "LastName": "form:last_name",
+                    "Birthdate": "form:birthdate",
+                    "CreatedDate": "python:now",
+                    "DoNotCall": "form:do_not_call"
+                },
+            },
+        ])
+        browser.getControl("Save").click()
+
+        # Fill and submit the form
+        with vcr.use_cassette("prefill.yaml") as cassette:
+            browser.open(form_url)
+
+        # Confirm values were prefilled
+        assert browser.getControl("First Name").value == ""
+        assert browser.getControl("Last Name").value == "McTesterson"
+        assert browser.getControl("Do Not Call").selected
+        assert browser.getControl(name="form.widgets.birthdate").value == "1985-09-30"
+        # TODO: add hidden field with encrypted sf_id, use it when saving
