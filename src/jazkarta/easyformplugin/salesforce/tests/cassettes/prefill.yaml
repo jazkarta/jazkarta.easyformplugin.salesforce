@@ -43,7 +43,7 @@
                         "1861"
                     ],
                     "set-cookie": [
-                        "BrowserId=LjVL0y_JEe2IcuVjM6t14Q; domain=.salesforce.com; path=/; expires=Fri, 08-Sep-2023 22:54:22 GMT; Max-Age=31536000"
+                        "BrowserId=L1lZOi_JEe2HW8vcxvz3og; domain=.salesforce.com; path=/; expires=Fri, 08-Sep-2023 22:54:24 GMT; Max-Age=31536000"
                     ],
                     "vary": [
                         "Accept-Encoding"
@@ -52,7 +52,7 @@
                         "no-cache,must-revalidate,max-age=0,no-store,private"
                     ],
                     "date": [
-                        "Thu, 08 Sep 2022 22:54:22 GMT"
+                        "Thu, 08 Sep 2022 22:54:24 GMT"
                     ],
                     "content-type": [
                         "text/xml; charset=utf-8"
@@ -60,90 +60,6 @@
                 },
                 "body": {
                     "string": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns=\"urn:partner.soap.sforce.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginResponse><result><metadataServerUrl>https://glicksoftware-dev-ed.my.salesforce.com/services/Soap/m/55.0/00D8a000003h4LM</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>false</sandbox><serverUrl>https://glicksoftware-dev-ed.my.salesforce.com/services/Soap/u/55.0/00D8a000003h4LM</serverUrl><sessionId>FAKE_SESSION</sessionId><userId>0058a00000KrMXuAAN</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>26214400</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>false</orgHasPersonAccounts><organizationId>00D8a000003h4LMEAY</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>Glick Software</organizationName><profileId>00e8a000002TVflAAG</profileId><roleId xsi:nil=\"true\"/><sessionSecondsValid>7200</sessionSecondsValid><userDefaultCurrencyIsoCode xsi:nil=\"true\"/><userEmail>david+plone@glicksoftware.com</userEmail><userFullName>David Glick</userFullName><userId>0058a00000KrMXuAAN</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>david+plone@glicksoftware.com</userName><userTimeZone>America/Los_Angeles</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>"
-                }
-            }
-        },
-        {
-            "request": {
-                "body": "{\"Description\": \"Created by jazkarta.easyformplugin.salesforce tests\", \"FirstName\": null, \"LastName\": \"McTesterson\", \"Birthdate\": \"1985-09-30\", \"CreatedDate\": \"2022-09-08T22:54:22+00:00\", \"DoNotCall\": true}",
-                "headers": {
-                    "Content-Length": [
-                        "206"
-                    ],
-                    "X-PrettyPrint": [
-                        "1"
-                    ],
-                    "Accept-Encoding": [
-                        "gzip, deflate"
-                    ],
-                    "Accept": [
-                        "*/*"
-                    ],
-                    "User-Agent": [
-                        "python-requests/2.27.1"
-                    ],
-                    "Connection": [
-                        "keep-alive"
-                    ],
-                    "Cookie": [
-                        "BrowserId=LjVL0y_JEe2IcuVjM6t14Q"
-                    ],
-                    "Content-Type": [
-                        "application/json"
-                    ]
-                },
-                "method": "POST",
-                "uri": "https://glicksoftware-dev-ed.my.salesforce.com/services/data/v55.0/sobjects/Contact/"
-            },
-            "response": {
-                "status": {
-                    "message": "Created",
-                    "code": 201
-                },
-                "headers": {
-                    "content-length": [
-                        "71"
-                    ],
-                    "x-xss-protection": [
-                        "1; mode=block"
-                    ],
-                    "x-robots-tag": [
-                        "none"
-                    ],
-                    "x-content-type-options": [
-                        "nosniff"
-                    ],
-                    "transfer-encoding": [
-                        "chunked"
-                    ],
-                    "set-cookie": [
-                        "CookieConsentPolicy=0:1; path=/; expires=Fri, 08-Sep-2023 22:54:23 GMT; Max-Age=31536000",
-                        "LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Fri, 08-Sep-2023 22:54:23 GMT; Max-Age=31536000"
-                    ],
-                    "strict-transport-security": [
-                        "max-age=63072000; includeSubDomains"
-                    ],
-                    "vary": [
-                        "Accept-Encoding"
-                    ],
-                    "location": [
-                        "/services/data/v55.0/sobjects/Contact/0038a000031SKZaAAO"
-                    ],
-                    "cache-control": [
-                        "no-cache,must-revalidate,max-age=0,no-store,private"
-                    ],
-                    "date": [
-                        "Thu, 08 Sep 2022 22:54:23 GMT"
-                    ],
-                    "sforce-limit-info": [
-                        "api-usage=29/15000"
-                    ],
-                    "content-type": [
-                        "application/json;charset=UTF-8"
-                    ]
-                },
-                "body": {
-                    "string": "{\n  \"id\" : \"0038a000031SKZaAAO\",\n  \"success\" : true,\n  \"errors\" : [ ]\n}"
                 }
             }
         }

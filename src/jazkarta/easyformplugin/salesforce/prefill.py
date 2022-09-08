@@ -1,13 +1,18 @@
 from collective.easyform.api import get_actions
 from collective.easyform.interfaces import IEasyForm
 from collective.easyform.interfaces import IEasyFormForm
+from dateutil.parser import parse
+from simple_salesforce import Salesforce
 from z3c.form.interfaces import IValue
 from zope.component import adapter
+from zope.globalrequest import getRequest
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.schema import getFields
 from zope.schema.interfaces import IField
+from zope.schema.interfaces import IDate
 
+from .action import SF_CREDENTIALS
 from .interfaces import IJazkartaEasyformpluginSalesforceLayer
 from .interfaces import ISaveToSalesforce
 
@@ -25,10 +30,10 @@ def prefill_value_factory(context, request, view, field, widget):
             for operation in action.operations:
                 if operation.get("operation") != "update":
                     continue
-                mapping_targets = operation.get("fields", {}).values()
-                if "form:%s" % field.__name__ not in mapping_targets:
-                    continue
-                return SalesforcePrefillValue(form, field, operation)
+                fields = operation.get("fields", {})
+                for sf_field, expr in fields.items():
+                    if expr == "form:%s" % field.__name__:
+                        return SalesforcePrefillValue(form, field, operation, sf_field)
 
     # Didn't find one, so return None
     # so that the IValue adapter lookup continues to the next one
@@ -40,15 +45,40 @@ from datetime import date
 @implementer(IValue)
 class SalesforcePrefillValue(object):
 
-    def __init__(self, form, field, operation):
+    def __init__(self, form, field, operation, sf_field):
         self.form = form
         self.field = field
         self.operation = operation
+        self.sf_field = sf_field
+
+        request = getRequest()
+        if not hasattr(request, '_jazkarta_easyform_sf_queries'):
+            request._jazkarta_easyform_sf_queries = {}
+        self.query_cache = request._jazkarta_easyform_sf_queries
+
+    def query(self):
+        fields = ', '.join(sorted(self.operation["fields"].keys()))
+        sobject = self.operation["sobject"]
+        where = self.operation["match_expression"]
+        soql = "SELECT {} FROM {} WHERE {}".format(fields, sobject, where)
+        if soql not in self.query_cache:
+            sf = Salesforce(**SF_CREDENTIALS)
+            result = sf.query(soql)
+            if result['totalSize'] != 1:
+                raise Exception("Didn't find match")
+            self.query_cache[soql] = result["records"][0]
+        return self.query_cache[soql]
 
     def get(self):
-        return {
-            "first_name": "",
-            "last_name": "McTesterson",
-            "do_not_call": True,
-            "birthdate": date(1985, 9, 30),
-        }.get(self.field.__name__)
+        value = self.query().get(self.sf_field)
+        if value and IDate.providedBy(self.field):
+            value = parse(value)
+        return value
+
+
+# to do:
+# - fix error from vcrpy
+# - handle no match / multiple matches
+# - convert dates
+# - handle dynamic match expressions
+# - make sure we update the same object
