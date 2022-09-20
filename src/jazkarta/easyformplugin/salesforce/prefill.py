@@ -40,8 +40,6 @@ def prefill_value_factory(context, request, view, field, widget):
     return None
 
 
-from datetime import date
-
 @implementer(IValue)
 class SalesforcePrefillValue(object):
 
@@ -79,6 +77,5 @@ class SalesforcePrefillValue(object):
 # to do:
 # - fix error from vcrpy
 # - handle no match / multiple matches
-# - convert dates
 # - handle dynamic match expressions
 # - make sure we update the same object
