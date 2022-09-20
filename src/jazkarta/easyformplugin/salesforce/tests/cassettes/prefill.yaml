@@ -43,7 +43,7 @@
                         "1861"
                     ],
                     "set-cookie": [
-                        "BrowserId=bP2WVTh5Ee28oymBfkUBsA; domain=.salesforce.com; path=/; expires=Wed, 20-Sep-2023 00:16:08 GMT; Max-Age=31536000"
+                        "BrowserId=Cy7eTziFEe2SOP3bw3dZdA; domain=.salesforce.com; path=/; expires=Wed, 20-Sep-2023 01:39:18 GMT; Max-Age=31536000"
                     ],
                     "vary": [
                         "Accept-Encoding"
@@ -52,7 +52,7 @@
                         "no-cache,must-revalidate,max-age=0,no-store,private"
                     ],
                     "date": [
-                        "Tue, 20 Sep 2022 00:16:08 GMT"
+                        "Tue, 20 Sep 2022 01:39:18 GMT"
                     ],
                     "content-type": [
                         "text/xml; charset=utf-8"
@@ -83,14 +83,14 @@
                         "keep-alive"
                     ],
                     "Cookie": [
-                        "BrowserId=bP2WVTh5Ee28oymBfkUBsA"
+                        "BrowserId=Cy7eTziFEe2SOP3bw3dZdA"
                     ],
                     "Content-Type": [
                         "application/json"
                     ]
                 },
                 "method": "GET",
-                "uri": "https://glicksoftware-dev-ed.my.salesforce.com/services/data/v55.0/query/?q=SELECT+Birthdate%2C+CreatedDate%2C+Description%2C+DoNotCall%2C+FirstName%2C+LastName+FROM+Contact+WHERE+LastName+%3D+%27McTesterson%27"
+                "uri": "https://glicksoftware-dev-ed.my.salesforce.com/services/data/v55.0/query/?q=SELECT+Id%2C+Birthdate%2C+Description%2C+DoNotCall%2C+FirstName%2C+LastName+FROM+Contact+WHERE+LastName+%3D+%27McTesterson%27"
             },
             "response": {
                 "status": {
@@ -99,7 +99,7 @@
                 },
                 "headers": {
                     "content-length": [
-                        "428"
+                        "409"
                     ],
                     "x-xss-protection": [
                         "1; mode=block"
@@ -114,8 +114,8 @@
                         "chunked"
                     ],
                     "set-cookie": [
-                        "CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 00:16:09 GMT; Max-Age=31536000",
-                        "LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 00:16:09 GMT; Max-Age=31536000"
+                        "CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 01:39:19 GMT; Max-Age=31536000",
+                        "LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 01:39:19 GMT; Max-Age=31536000"
                     ],
                     "strict-transport-security": [
                         "max-age=63072000; includeSubDomains"
@@ -127,17 +127,151 @@
                         "no-cache,must-revalidate,max-age=0,no-store,private"
                     ],
                     "date": [
-                        "Tue, 20 Sep 2022 00:16:09 GMT"
+                        "Tue, 20 Sep 2022 01:39:19 GMT"
                     ],
                     "sforce-limit-info": [
-                        "api-usage=56/15000"
+                        "api-usage=82/15000"
                     ],
                     "content-type": [
                         "application/json;charset=UTF-8"
                     ]
                 },
                 "body": {
-                    "string": "{\n  \"totalSize\" : 1,\n  \"done\" : true,\n  \"records\" : [ {\n    \"attributes\" : {\n      \"type\" : \"Contact\",\n      \"url\" : \"/services/data/v55.0/sobjects/Contact/0038a000031TLV2AAO\"\n    },\n    \"Birthdate\" : \"1985-09-30\",\n    \"CreatedDate\" : \"2022-09-19T23:58:05.000+0000\",\n    \"Description\" : \"Created by jazkarta.easyformplugin.salesforce tests\",\n    \"DoNotCall\" : true,\n    \"FirstName\" : null,\n    \"LastName\" : \"McTesterson\"\n  } ]\n}"
+                    "string": "{\n  \"totalSize\" : 1,\n  \"done\" : true,\n  \"records\" : [ {\n    \"attributes\" : {\n      \"type\" : \"Contact\",\n      \"url\" : \"/services/data/v55.0/sobjects/Contact/0038a000031TLkCAAW\"\n    },\n    \"Id\" : \"0038a000031TLkCAAW\",\n    \"Birthdate\" : \"1985-09-30\",\n    \"Description\" : \"Created by jazkarta.easyformplugin.salesforce tests\",\n    \"DoNotCall\" : true,\n    \"FirstName\" : null,\n    \"LastName\" : \"McTesterson\"\n  } ]\n}"
+                }
+            }
+        },
+        {
+            "request": {
+                "body": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n        <env:Envelope\n                xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n                xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                xmlns:urn=\"urn:partner.soap.sforce.com\">\n            <env:Header>\n                <urn:CallOptions>\n                    <urn:client>RestForce</urn:client>\n                    <urn:defaultNamespace>sf</urn:defaultNamespace>\n                </urn:CallOptions>\n            </env:Header>\n            <env:Body>\n                <n1:login xmlns:n1=\"urn:partner.soap.sforce.com\">\n                    <n1:username>REDACTED</n1:username>\n                    <n1:password>REDACTED</n1:password>\n                </n1:login>\n            </env:Body>\n        </env:Envelope>",
+                "headers": {
+                    "Content-Length": [
+                        "900"
+                    ],
+                    "Accept-Encoding": [
+                        "gzip, deflate"
+                    ],
+                    "SOAPAction": [
+                        "login"
+                    ],
+                    "charset": [
+                        "UTF-8"
+                    ],
+                    "Accept": [
+                        "*/*"
+                    ],
+                    "User-Agent": [
+                        "python-requests/2.27.1"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ],
+                    "content-type": [
+                        "text/xml"
+                    ]
+                },
+                "method": "POST",
+                "uri": "https://login.salesforce.com/services/Soap/u/55.0"
+            },
+            "response": {
+                "status": {
+                    "message": "OK",
+                    "code": 200
+                },
+                "headers": {
+                    "content-length": [
+                        "1861"
+                    ],
+                    "set-cookie": [
+                        "BrowserId=C-4PhjiFEe2RqOX9-pPw5w; domain=.salesforce.com; path=/; expires=Wed, 20-Sep-2023 01:39:20 GMT; Max-Age=31536000"
+                    ],
+                    "vary": [
+                        "Accept-Encoding"
+                    ],
+                    "cache-control": [
+                        "no-cache,must-revalidate,max-age=0,no-store,private"
+                    ],
+                    "date": [
+                        "Tue, 20 Sep 2022 01:39:20 GMT"
+                    ],
+                    "content-type": [
+                        "text/xml; charset=utf-8"
+                    ]
+                },
+                "body": {
+                    "string": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns=\"urn:partner.soap.sforce.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginResponse><result><metadataServerUrl>https://glicksoftware-dev-ed.my.salesforce.com/services/Soap/m/55.0/00D8a000003h4LM</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>false</sandbox><serverUrl>https://glicksoftware-dev-ed.my.salesforce.com/services/Soap/u/55.0/00D8a000003h4LM</serverUrl><sessionId>FAKE_SESSION</sessionId><userId>0058a00000KrMXuAAN</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>26214400</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>false</orgHasPersonAccounts><organizationId>00D8a000003h4LMEAY</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>Glick Software</organizationName><profileId>00e8a000002TVflAAG</profileId><roleId xsi:nil=\"true\"/><sessionSecondsValid>7200</sessionSecondsValid><userDefaultCurrencyIsoCode xsi:nil=\"true\"/><userEmail>david+plone@glicksoftware.com</userEmail><userFullName>David Glick</userFullName><userId>0058a00000KrMXuAAN</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>david+plone@glicksoftware.com</userName><userTimeZone>America/Los_Angeles</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>"
+                }
+            }
+        },
+        {
+            "request": {
+                "body": "{\"LastName\": \"McTesterson\", \"FirstName\": \"Testy\", \"Description\": \"Created by jazkarta.easyformplugin.salesforce tests\", \"Birthdate\": \"1985-09-30\", \"DoNotCall\": true}",
+                "headers": {
+                    "Content-Length": [
+                        "165"
+                    ],
+                    "X-PrettyPrint": [
+                        "1"
+                    ],
+                    "Accept-Encoding": [
+                        "gzip, deflate"
+                    ],
+                    "Accept": [
+                        "*/*"
+                    ],
+                    "User-Agent": [
+                        "python-requests/2.27.1"
+                    ],
+                    "Connection": [
+                        "keep-alive"
+                    ],
+                    "Cookie": [
+                        "BrowserId=C-4PhjiFEe2RqOX9-pPw5w"
+                    ],
+                    "Content-Type": [
+                        "application/json"
+                    ]
+                },
+                "method": "PATCH",
+                "uri": "https://glicksoftware-dev-ed.my.salesforce.com/services/data/v55.0/sobjects/Contact/0038a000031TLkCAAW"
+            },
+            "response": {
+                "status": {
+                    "message": "No Content",
+                    "code": 204
+                },
+                "headers": {
+                    "x-xss-protection": [
+                        "1; mode=block"
+                    ],
+                    "content-security-policy": [
+                        "upgrade-insecure-requests"
+                    ],
+                    "x-content-type-options": [
+                        "nosniff"
+                    ],
+                    "set-cookie": [
+                        "CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 01:39:20 GMT; Max-Age=31536000",
+                        "LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Wed, 20-Sep-2023 01:39:20 GMT; Max-Age=31536000"
+                    ],
+                    "strict-transport-security": [
+                        "max-age=63072000; includeSubDomains"
+                    ],
+                    "cache-control": [
+                        "no-cache,must-revalidate,max-age=0,no-store,private"
+                    ],
+                    "date": [
+                        "Tue, 20 Sep 2022 01:39:20 GMT"
+                    ],
+                    "sforce-limit-info": [
+                        "api-usage=82/15000"
+                    ],
+                    "x-robots-tag": [
+                        "none"
+                    ]
+                },
+                "body": {
+                    "string": ""
                 }
             }
         }

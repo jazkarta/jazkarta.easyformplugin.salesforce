@@ -142,7 +142,6 @@ class TestIntegration(unittest.TestCase):
                     "FirstName": "form:first_name",
                     "LastName": "form:last_name",
                     "Birthdate": "form:birthdate",
-                    "CreatedDate": "python:now",
                     "DoNotCall": "form:do_not_call"
                 },
             },
@@ -153,9 +152,22 @@ class TestIntegration(unittest.TestCase):
         with vcr.use_cassette("prefill.yaml") as cassette:
             browser.open(form_url)
 
-        # Confirm values were prefilled
-        assert browser.getControl("First Name").value == ""
-        assert browser.getControl("Last Name").value == "McTesterson"
-        assert browser.getControl("Do Not Call").selected
-        assert browser.getControl(name="form.widgets.birthdate").value == "1985-09-30"
-        # TODO: add hidden field with encrypted sf_id, use it when saving
+            # Confirm values were prefilled
+            assert browser.getControl("First Name").value == ""
+            assert browser.getControl("Last Name").value == "McTesterson"
+            assert browser.getControl("Do Not Call").selected
+            assert browser.getControl(name="form.widgets.birthdate").value == "1985-09-30"
+
+            # Edit and submit the form
+            browser.getControl("First Name").value = "Testy"
+            browser.getControl("Submit").click()
+
+            # Confirm a specific object was updated
+            actual_request = cassette.requests[-1]
+            assert actual_request.method == "PATCH"
+            # Path ends with something that looks like a Contact Id
+            last_path = actual_request.url.split("/")[-1]
+            assert len(last_path) == 18
+            assert last_path[:3] == "003"
+            # The changed data is there
+            assert json.loads(actual_request.body)["FirstName"] == "Testy"

@@ -49,23 +49,27 @@ class SalesforcePrefillValue(object):
         self.operation = operation
         self.sf_field = sf_field
 
-        request = getRequest()
-        if not hasattr(request, '_jazkarta_easyform_sf_queries'):
-            request._jazkarta_easyform_sf_queries = {}
-        self.query_cache = request._jazkarta_easyform_sf_queries
+        self.request = getRequest()
+        if not hasattr(self.request, '_jazkarta_easyform_sf_queries'):
+            self.request._jazkarta_easyform_sf_queries = {}
+        self.query_cache = self.request._jazkarta_easyform_sf_queries
 
     def query(self):
-        fields = ', '.join(sorted(self.operation["fields"].keys()))
+        fields = sorted(self.operation["fields"].keys())
+        if "Id" not in fields:
+            fields = ["Id"] + fields
         sobject = self.operation["sobject"]
         where = self.operation["match_expression"]
-        soql = "SELECT {} FROM {} WHERE {}".format(fields, sobject, where)
+        soql = "SELECT {} FROM {} WHERE {}".format(", ".join(fields), sobject, where)
         if soql not in self.query_cache:
             sf = Salesforce(**SF_CREDENTIALS)
             result = sf.query(soql)
             if result['totalSize'] != 1:
                 raise Exception("Didn't find match")
             self.query_cache[soql] = result["records"][0]
-        return self.query_cache[soql]
+        item = self.query_cache[soql]
+        self.request.response.setCookie('sf_id', item['Id'], path=self.form.absolute_url_path())
+        return item
 
     def get(self):
         value = self.query().get(self.sf_field)
@@ -75,7 +79,7 @@ class SalesforcePrefillValue(object):
 
 
 # to do:
-# - fix error from vcrpy
+# - sign the cookie
+# - use object from cookie if form was submitted with an error
 # - handle no match / multiple matches
 # - handle dynamic match expressions
-# - make sure we update the same object
