@@ -7,4 +7,8 @@ _ = MessageFactory("jazkarta.easyformplugin.salesforce")
 
 
 # Make sure migrators are registered
-from . import migration
+try:
+    from . import migration
+except ImportError:
+    # Probably PloneFormGen isn't installed
+    pass
