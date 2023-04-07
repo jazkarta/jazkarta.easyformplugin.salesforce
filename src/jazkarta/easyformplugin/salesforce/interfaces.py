@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """Module where all interfaces, events and exceptions live."""
 
-import json
-
 from collective.easyform.interfaces.actions import MODIFY_PORTAL_CONTENT, IAction
 from collective.easyform.interfaces import IEasyFormLayer
 from plone.autoform import directives
 from plone.schema.jsonfield import JSONField
-
 from . import _
+import json
+
 
 class IJazkartaEasyformpluginSalesforceLayer(IEasyFormLayer):
     """Marker interface that defines a browser layer."""
