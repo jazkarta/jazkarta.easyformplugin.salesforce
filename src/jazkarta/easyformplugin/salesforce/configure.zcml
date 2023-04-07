@@ -51,4 +51,10 @@
       name="jazkarta.easyformplugin.salesforce.action.SendToSalesforce"
       />
 
+  <adapter
+      factory=".prefill.prefill_value_factory"
+      provides="z3c.form.interfaces.IValue"
+      name="default"
+      />
+
 </configure>

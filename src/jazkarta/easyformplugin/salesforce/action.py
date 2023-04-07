@@ -70,6 +70,16 @@ class SendToSalesforce(Action):
                     logger.info(u"Created {} {} in Salesforce".format(sobject_name, sf_id))
                 else:
                     raise Exception(u"Failed to create {} in Salesforce: {}".format(sobject_name, result["errors"]))
+            elif op_name == "update":
+                sf_id = request.cookies.get("sf_id")
+                if not sf_id:
+                    raise Exception(u"No Salesforce object matched for update")
+                result = sobject.update(sf_id, data)
+                if result == 204:
+                    request.response.expireCookie("sf_id", path=form.absolute_url_path())
+                    logger.info(u"Updated {} {} in Salesforce".format(sobject_name, sf_id))
+                else:
+                    raise Exception(u"Failed to update {} {} in Salesforce: {}".format(sobject_name, sf_id, result))
             else:
                 raise ValueError("Unsupported operation: {}".format(operation))
 
