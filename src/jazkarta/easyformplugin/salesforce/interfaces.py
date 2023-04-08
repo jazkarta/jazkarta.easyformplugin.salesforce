@@ -19,20 +19,24 @@ class ISaveToSalesforce(IAction):
     directives.read_permission(operations=MODIFY_PORTAL_CONTENT)
     operations = JSONField(
         title=_(u"label_salesforce_operations", default=u"Salesforce Operations"),
-        description=_(u"help_salesforce_operations", default=u"""A JSON list of operations to perform.
+        description=_(u"help_salesforce_operations", default=u"""<p>A JSON list of operations to perform.</p>
 
-    Each operation must specify:
-    * sobject - name of the Salesforce sObject
-    * operation - what operation to perform (`create` is currently the only supported operation)
-    * fields - a mapping of Salesforce field names to expressions.
+    <p>Each operation must specify:</p>
+    <ul>
+      <li>sobject - name of the Salesforce sObject</li>
+      <li>operation - what operation to perform (`create` is currently the only supported operation)</li>
+      <li>fields - a mapping of Salesforce field names to expressions.</li>
 
-    Each field expression can be one of:
-    * "form:x" -- value of the form field named `x`
-    * "path:x" -- a TALES path expression
-    * "python:x" -- a TALES Python expression
-    * "string:x" -- a TALES string expression
+    <p>Each field expression can be one of:</p>
+    <ul>
+      <li>"form:x" -- value of the form field named `x`</li>
+      <li>"path:x" -- a TALES path expression</li>
+      <li>"python:x" -- a TALES Python expression</li>
+      <li>"string:x" -- a TALES string expression</li>
+    </ul>
 
-    Example:
+    <p>Example:</p>
+    <pre>
     [
         {
             "sobject": "Contact",
@@ -42,6 +46,7 @@ class ISaveToSalesforce(IAction):
             }
         }
     ]
+    </pre>
 """),
         defaultFactory=list,
         schema=json.dumps({
