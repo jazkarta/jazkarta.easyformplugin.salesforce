@@ -62,6 +62,7 @@ class ISaveToSalesforce(IAction):
                     "sobject": {"type": "string"},
                     "operation": {"type": "string", "enum": ["create", "update"]},
                     "match_expression": {"type": "string"},
+                    "action_if_no_existing_object": {"type": "string", "enum": ["abort", "create"]},
                     "fields": {
                         "type": "object",
                         "additionalProperties": {

@@ -23,11 +23,12 @@ def append_sf_action(schema, type_, name, properties):
     }
     if creation_mode == "update":
         op["match_expression"] = properties["updateMatchExpression"]
-        if properties["actionIfNoExistingObject"] != "abort":
+        if properties["actionIfNoExistingObject"] not in ("abort", "create"):
             raise NotImplementedError(
                 "Unsupported actionIfNoExistingObject: {}".format(
                 properties['actionIfNoExistingObject'])
             )
+        op["action_if_no_existing_object"] = properties["actionIfNoExistingObject"]
     if properties["dependencyMap"]:
         raise NotImplementedError(
             "Unsupported: dependencyMap (jazkarta.easyformplugins.salesforce "
