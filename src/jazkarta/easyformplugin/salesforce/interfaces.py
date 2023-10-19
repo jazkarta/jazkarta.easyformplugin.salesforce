@@ -18,8 +18,10 @@ class ISaveToSalesforce(IAction):
 
     directives.read_permission(operations=MODIFY_PORTAL_CONTENT)
     operations = JSONField(
-        title=_(u"label_salesforce_operations", default=u"Salesforce Operations"),
-        description=_(u"help_salesforce_operations", default=u"""<p>A JSON list of operations to perform.</p>
+        title=_("label_salesforce_operations", default="Salesforce Operations"),
+        description=_(
+            "help_salesforce_operations",
+            default="""<p>A JSON list of operations to perform.</p>
 
     <p>Each operation must specify:</p>
     <ul>
@@ -47,30 +49,34 @@ class ISaveToSalesforce(IAction):
         }
     ]
     </pre>
-"""),
+""",
+        ),
         defaultFactory=list,
-        schema=json.dumps({
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": [
-                    "sobject",
-                    "operation",
-                    "fields",
-                ],
-                "properties": {
-                    "sobject": {"type": "string"},
-                    "operation": {"type": "string", "enum": ["create", "update"]},
-                    "match_expression": {"type": "string"},
-                    "action_if_no_existing_object": {"type": "string", "enum": ["abort", "create"]},
-                    "fields": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
+        schema=json.dumps(
+            {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "sobject",
+                        "operation",
+                        "fields",
+                    ],
+                    "properties": {
+                        "sobject": {"type": "string"},
+                        "operation": {"type": "string", "enum": ["create", "update"]},
+                        "match_expression": {"type": "string"},
+                        "action_if_no_existing_object": {
+                            "type": "string",
+                            "enum": ["abort", "create"],
+                        },
+                        "fields": {
+                            "type": "object",
+                            "additionalProperties": {"type": "string"},
+                        },
+                    },
+                    "additionalProperties": False,
                 },
-                "additionalProperties": False,
-            },
-        })
+            }
+        ),
     )

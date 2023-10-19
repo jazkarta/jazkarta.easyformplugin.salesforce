@@ -20,9 +20,15 @@ SF_CREDENTIALS = {
     "username": os.environ.get("SALESFORCE_USERNAME"),
     "password": os.environ.get("SALESFORCE_PASSWORD"),
     "security_token": os.environ.get("SALESFORCE_TOKEN"),
-    "domain": os.environ.get("SALESFORCE_DOMAIN"),
+    "domain": os.environ.get("SALESFORCE_DOMAIN")
+    or (
+        "test"
+        if os.environ.get("SALESFORCE_SANDBOX", "true").lower() in ("true", "1")
+        else "login"
+    ),
     "version": "55.0",
 }
+
 
 @implementer(ISaveToSalesforce)
 class SendToSalesforce(Action):
@@ -67,9 +73,15 @@ class SendToSalesforce(Action):
                 result = sobject.create(data)
                 if result["success"]:
                     sf_id = result["id"]
-                    logger.info(u"Created {} {} in Salesforce".format(sobject_name, sf_id))
+                    logger.info(
+                        "Created {} {} in Salesforce".format(sobject_name, sf_id)
+                    )
                 else:
-                    raise Exception(u"Failed to create {} in Salesforce: {}".format(sobject_name, result["errors"]))
+                    raise Exception(
+                        "Failed to create {} in Salesforce: {}".format(
+                            sobject_name, result["errors"]
+                        )
+                    )
             elif op_name == "update":
                 sf_id = request.cookies.get("sf_id")
                 if sf_id:
@@ -79,12 +91,20 @@ class SendToSalesforce(Action):
                         result = sobject.create(data)
                         sf_id = result["Id"]
                     else:
-                        raise Exception(u"No Salesforce object matched for update")
+                        raise Exception("No Salesforce object matched for update")
                 if result == 204:
-                    request.response.expireCookie("sf_id", path=form.absolute_url_path())
-                    logger.info(u"Updated {} {} in Salesforce".format(sobject_name, sf_id))
+                    request.response.expireCookie(
+                        "sf_id", path=form.absolute_url_path()
+                    )
+                    logger.info(
+                        "Updated {} {} in Salesforce".format(sobject_name, sf_id)
+                    )
                 else:
-                    raise Exception(u"Failed to update {} {} in Salesforce: {}".format(sobject_name, sf_id, result))
+                    raise Exception(
+                        "Failed to update {} {} in Salesforce: {}".format(
+                            sobject_name, sf_id, result
+                        )
+                    )
             else:
                 raise ValueError("Unsupported operation: {}".format(operation))
 
@@ -126,7 +146,7 @@ class SendToSalesforce(Action):
 # Action factory used by the UI for adding a new easyform action
 SendToSalesforceAction = ActionFactory(
     SendToSalesforce,
-    _(u"label_salesforce_action", default=u"Send to Salesforce"),
+    _("label_salesforce_action", default="Send to Salesforce"),
     "jazkarta.easyformplugin.salesforce.AddSalesforceActions",
 )
 

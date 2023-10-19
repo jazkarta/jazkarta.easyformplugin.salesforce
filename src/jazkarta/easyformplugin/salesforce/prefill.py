@@ -17,7 +17,9 @@ from .interfaces import IJazkartaEasyformpluginSalesforceLayer
 from .interfaces import ISaveToSalesforce
 
 
-@adapter(IEasyForm, IJazkartaEasyformpluginSalesforceLayer, IEasyFormForm, IField, Interface)
+@adapter(
+    IEasyForm, IJazkartaEasyformpluginSalesforceLayer, IEasyFormForm, IField, Interface
+)
 def prefill_value_factory(context, request, view, field, widget):
     """Return a SalesforcePrefillValue if and only if there is a
     Salesforce action mapping the field
@@ -42,7 +44,6 @@ def prefill_value_factory(context, request, view, field, widget):
 
 @implementer(IValue)
 class SalesforcePrefillValue(object):
-
     def __init__(self, form, field, operation, sf_field):
         self.form = form
         self.field = field
@@ -50,7 +51,7 @@ class SalesforcePrefillValue(object):
         self.sf_field = sf_field
 
         self.request = getRequest()
-        if not hasattr(self.request, '_jazkarta_easyform_sf_queries'):
+        if not hasattr(self.request, "_jazkarta_easyform_sf_queries"):
             self.request._jazkarta_easyform_sf_queries = {}
         self.query_cache = self.request._jazkarta_easyform_sf_queries
 
@@ -64,11 +65,13 @@ class SalesforcePrefillValue(object):
         if soql not in self.query_cache:
             sf = Salesforce(**SF_CREDENTIALS)
             result = sf.query(soql)
-            if result['totalSize'] != 1:
+            if result["totalSize"] != 1:
                 raise Exception("Didn't find match")
             self.query_cache[soql] = result["records"][0]
         item = self.query_cache[soql]
-        self.request.response.setCookie('sf_id', item['Id'], path=self.form.absolute_url_path())
+        self.request.response.setCookie(
+            "sf_id", item["Id"], path=self.form.absolute_url_path()
+        )
         return item
 
     def get(self):

@@ -17,7 +17,6 @@ import jazkarta.easyformplugin.salesforce
 
 
 class JazkartaEasyformpluginSalesforceLayer(PloneSandboxLayer):
-
     defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
@@ -58,7 +57,7 @@ JAZKARTA_EASYFORMPLUGIN_SALESFORCE_ACCEPTANCE_TESTING = FunctionalTesting(
 def scrub_login_request(request):
     if request.body is not None:
         request.body = re.sub(
-            br"<n1:(username|password)>.*?</n1:\1>",
+            rb"<n1:(username|password)>.*?</n1:\1>",
             lambda m: b"<n1:" + m.group(1) + b">REDACTED</n1:" + m.group(1) + b">",
             request.body,
         )
@@ -67,7 +66,7 @@ def scrub_login_request(request):
 
 def scrub_login_response(response):
     response["body"]["string"] = re.sub(
-        br"<sessionId>.*?</sessionId>",
+        rb"<sessionId>.*?</sessionId>",
         b"<sessionId>FAKE_SESSION</sessionId>",
         response["body"]["string"],
     )

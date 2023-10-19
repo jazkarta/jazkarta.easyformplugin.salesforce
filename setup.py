@@ -18,7 +18,7 @@ setup(
     version="1.0a1",
     description="Adds a behavior to collective.easyform to sync data to Salesforce",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     # Get more from https://pypi.org/classifiers/
     classifiers=[
         "Environment :: Web Environment",

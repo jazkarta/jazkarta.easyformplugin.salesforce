@@ -64,7 +64,9 @@ class TestIntegration(unittest.TestCase):
     def test_01_submit_form_with_salesforce_adapter(self):
         # Open browser
         browser = Browser(self.layer["app"])
-        browser.addHeader("Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD))
+        browser.addHeader(
+            "Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD)
+        )
         browser.handleErrors = False
         form_url = self.form.absolute_url()
 
@@ -75,20 +77,22 @@ class TestIntegration(unittest.TestCase):
         browser.getControl("Send to Salesforce").selected = True
         browser.getControl("Add").click()
         browser.open(form_url + "/actions/sf_contact")
-        browser.getControl("Operations").value = json.dumps([
-            {
-                "sobject": "Contact",
-                "operation": "create",
-                "fields": {
-                    "Description": "Created by jazkarta.easyformplugin.salesforce tests",
-                    "FirstName": "form:first_name",
-                    "LastName": "form:last_name",
-                    "Birthdate": "form:birthdate",
-                    "CreatedDate": "python:now",
-                    "DoNotCall": "form:do_not_call"
+        browser.getControl("Operations").value = json.dumps(
+            [
+                {
+                    "sobject": "Contact",
+                    "operation": "create",
+                    "fields": {
+                        "Description": "Created by jazkarta.easyformplugin.salesforce tests",
+                        "FirstName": "form:first_name",
+                        "LastName": "form:last_name",
+                        "Birthdate": "form:birthdate",
+                        "CreatedDate": "python:now",
+                        "DoNotCall": "form:do_not_call",
+                    },
                 },
-            },
-        ])
+            ]
+        )
         browser.getControl("Save").click()
 
         # Fill and submit the form
@@ -103,7 +107,14 @@ class TestIntegration(unittest.TestCase):
 
         self.assertEqual(len(cassette), 2)
         actual_data = json.loads(cassette.requests[-1].body)
-        assert set(actual_data.keys()) == {"FirstName", "LastName", "Birthdate", "CreatedDate", "DoNotCall", "Description"}
+        assert set(actual_data.keys()) == {
+            "FirstName",
+            "LastName",
+            "Birthdate",
+            "CreatedDate",
+            "DoNotCall",
+            "Description",
+        }
         assert actual_data["FirstName"] is None
         assert actual_data["LastName"] == "McTesterson"
         assert actual_data["DoNotCall"] == True
@@ -111,7 +122,10 @@ class TestIntegration(unittest.TestCase):
         created_date = parse(actual_data["CreatedDate"])
         assert isinstance(created_date, datetime)
         assert created_date.tzinfo is not None
-        assert actual_data["Description"] == "Created by jazkarta.easyformplugin.salesforce tests"
+        assert (
+            actual_data["Description"]
+            == "Created by jazkarta.easyformplugin.salesforce tests"
+        )
         assert json.loads(cassette.responses[-1]["body"]["string"])["success"]
 
     def test_02_prefill_form_from_salesforce(self):
@@ -121,7 +135,9 @@ class TestIntegration(unittest.TestCase):
 
         # Open browser
         browser = Browser(self.layer["app"])
-        browser.addHeader("Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD))
+        browser.addHeader(
+            "Authorization", "Basic {}:{}".format(TEST_USER_NAME, TEST_USER_PASSWORD)
+        )
         browser.handleErrors = False
         form_url = self.form.absolute_url()
 
@@ -132,20 +148,22 @@ class TestIntegration(unittest.TestCase):
         browser.getControl("Send to Salesforce").selected = True
         browser.getControl("Add").click()
         browser.open(form_url + "/actions/sf_contact")
-        browser.getControl("Operations").value = json.dumps([
-            {
-                "sobject": "Contact",
-                "operation": "update",
-                "match_expression": "LastName = 'McTesterson'",
-                "fields": {
-                    "Description": "Created by jazkarta.easyformplugin.salesforce tests",
-                    "FirstName": "form:first_name",
-                    "LastName": "form:last_name",
-                    "Birthdate": "form:birthdate",
-                    "DoNotCall": "form:do_not_call"
+        browser.getControl("Operations").value = json.dumps(
+            [
+                {
+                    "sobject": "Contact",
+                    "operation": "update",
+                    "match_expression": "LastName = 'McTesterson'",
+                    "fields": {
+                        "Description": "Created by jazkarta.easyformplugin.salesforce tests",
+                        "FirstName": "form:first_name",
+                        "LastName": "form:last_name",
+                        "Birthdate": "form:birthdate",
+                        "DoNotCall": "form:do_not_call",
+                    },
                 },
-            },
-        ])
+            ]
+        )
         browser.getControl("Save").click()
 
         # Fill and submit the form
@@ -156,7 +174,9 @@ class TestIntegration(unittest.TestCase):
             assert browser.getControl("First Name").value == ""
             assert browser.getControl("Last Name").value == "McTesterson"
             assert browser.getControl("Do Not Call").selected
-            assert browser.getControl(name="form.widgets.birthdate").value == "1985-09-30"
+            assert (
+                browser.getControl(name="form.widgets.birthdate").value == "1985-09-30"
+            )
 
             # Edit and submit the form
             browser.getControl("First Name").value = "Testy"
