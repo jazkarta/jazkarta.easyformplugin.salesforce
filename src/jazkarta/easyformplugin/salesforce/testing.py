@@ -57,7 +57,7 @@ JAZKARTA_EASYFORMPLUGIN_SALESFORCE_ACCEPTANCE_TESTING = FunctionalTesting(
 def scrub_login_request(request):
     if request.body is not None:
         request.body = re.sub(
-            rb"<n1:(username|password)>.*?</n1:\1>",
+            br"<n1:(username|password)>.*?</n1:\1>",
             lambda m: b"<n1:" + m.group(1) + b">REDACTED</n1:" + m.group(1) + b">",
             request.body,
         )
@@ -66,7 +66,7 @@ def scrub_login_request(request):
 
 def scrub_login_response(response):
     response["body"]["string"] = re.sub(
-        rb"<sessionId>.*?</sessionId>",
+        br"<sessionId>.*?</sessionId>",
         b"<sessionId>FAKE_SESSION</sessionId>",
         response["body"]["string"],
     )
