@@ -13,6 +13,7 @@ env:
   SALESFORCE_USERNAME: test@example.com
   SALESFORCE_PASSWORD: bogus
   SALESFORCE_TOKEN: bogus
+  SALESFORCE_DOMAIN: login
 
 jobs:
   build:
@@ -23,6 +24,43 @@ jobs:
         include:
           - python-version: 3.9
             plone-version: 52
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pip
+            ~/buildout-cache
+            ~/extends
+          key: ${{ runner.os }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install system libraries
+        run: sudo apt-get install libxml2-dev libxslt1-dev libjpeg-dev
+      - name: setup buildout cache
+        run: |
+          mkdir -p ~/buildout-cache/{eggs,downloads}
+          mkdir ~/.buildout
+          echo "[buildout]" > $HOME/.buildout/default.cfg
+          echo "download-cache = $HOME/buildout-cache/downloads" >> $HOME/.buildout/default.cfg
+          echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
+      - name: Install pip and zc.buildout
+        run: python -m pip install --upgrade pip wheel zc.buildout setuptools -c constraints_plone${{ matrix.plone-version }}.txt
+      - name: Run buildout
+        run: buildout -c test_plone${{ matrix.plone-version }}.cfg
+      - name: Run tests
+        run: bin/test
+
+  build-py27:
+    runs-on: ubuntu-20.04
+    container:
+      image: python:2.7.18-buster
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
           - python-version: 2.7
             plone-version: 52
           - python-version: 2.7
@@ -35,13 +73,9 @@ jobs:
             ~/.cache/pip
             ~/buildout-cache
             ~/extends
-          key: ${{ runner.os }}-deps-cache-${{ hashFiles('**/setup.py') }}-${{ hashFiles('**/*.cfg') }} }}
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+          key: ${{ runner.os }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
       - name: Install system libraries
-        run: sudo apt-get install libxml2-dev libxslt1-dev libjpeg-dev
+        run: apt-get install libxml2-dev libxslt1-dev libjpeg-dev
       - name: setup buildout cache
         run: |
           mkdir -p ~/buildout-cache/{eggs,downloads}
