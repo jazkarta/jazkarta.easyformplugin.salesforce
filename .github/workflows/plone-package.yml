@@ -13,6 +13,7 @@ env:
   SALESFORCE_USERNAME: test@example.com
   SALESFORCE_PASSWORD: bogus
   SALESFORCE_TOKEN: bogus
+  SALESFORCE_DOMAIN: login
 
 jobs:
   build:
