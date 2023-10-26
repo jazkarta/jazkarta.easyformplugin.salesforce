@@ -32,7 +32,7 @@ jobs:
             ~/.cache/pip
             ~/buildout-cache
             ~/extends
-          key: ${{ runner.os }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
+          key: ${{ matrix.python-version }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -73,7 +73,7 @@ jobs:
             ~/.cache/pip
             ~/buildout-cache
             ~/extends
-          key: ${{ runner.os }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
+          key: ${{ matrix.python-version }}-deps-cache-${{ hashFiles('setup.py') }}-${{ hashFiles('*.cfg') }} }}
       - name: Install system libraries
         run: apt-get install libxml2-dev libxslt1-dev libjpeg-dev
       - name: setup buildout cache

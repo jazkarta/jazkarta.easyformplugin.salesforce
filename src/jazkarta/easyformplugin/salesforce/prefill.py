@@ -1,6 +1,7 @@
 from collective.easyform.api import get_actions
 from collective.easyform.interfaces import IEasyForm
 from collective.easyform.interfaces import IEasyFormForm
+from collective.easyform.fields import superAdapter
 from dateutil.parser import parse
 from simple_salesforce import Salesforce
 from z3c.form.interfaces import IValue
@@ -37,9 +38,15 @@ def prefill_value_factory(context, request, view, field, widget):
                     if expr == "form:%s" % field.__name__:
                         return SalesforcePrefillValue(form, field, operation, sf_field)
 
-    # Didn't find one, so return None
-    # so that the IValue adapter lookup continues to the next one
-    return None
+    # Didn't find one, fall back to less specific adapter
+    adapter = superAdapter(
+        IJazkartaEasyformpluginSalesforceLayer,
+        prefill_value_factory,
+        (context, request, view, field, widget),
+        name="default",
+    )
+    if adapter is not None:
+        return adapter
 
 
 @implementer(IValue)
