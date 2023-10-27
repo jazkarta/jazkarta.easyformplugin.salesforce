@@ -16,9 +16,8 @@ def append_sf_action(schema, type_, name, properties):
         raise NotImplementedError("Unsupported creationMode: {}".format(creation_mode))
     fields = {}
     for item in properties["fieldMap"]:
-        if "/" in item["field_path"]:
-            raise NotImplementedError("Fields in fieldset folders not supported yet.")
-        fields[item["sf_field"]] = "form:" + item["field_path"]
+        path = item["field_path"].split(',')[-1]
+        fields[item["sf_field"]] = "form:" + path
     for item in properties["presetValueMap"]:
         fields[item["sf_field"]] = item["value"]
     op = {
@@ -41,7 +40,7 @@ def append_sf_action(schema, type_, name, properties):
             "does not support chained adapters at this time)."
         )
 
-    append_node(node, "operations", json.dumps([op]))
+    append_node(node, "operations", json.dumps([op], indent=4))
     return node
 
 

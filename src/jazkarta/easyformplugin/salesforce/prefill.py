@@ -12,6 +12,7 @@ from zope.interface import Interface
 from zope.schema import getFields
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import IDate
+from zope.schema.interfaces import ISet
 
 from .action import SF_CREDENTIALS
 from .interfaces import IJazkartaEasyformpluginSalesforceLayer
@@ -83,8 +84,11 @@ class SalesforcePrefillValue(object):
 
     def get(self):
         value = self.query().get(self.sf_field)
-        if value and IDate.providedBy(self.field):
-            value = parse(value)
+        if value:
+            if IDate.providedBy(self.field):
+                value = parse(value)
+            elif ISet.providedBy(self.field):
+                value = set(value.split(';'))
         return value
 
 
