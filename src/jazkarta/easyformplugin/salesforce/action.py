@@ -118,6 +118,8 @@ class SendToSalesforce(Action):
         """
         data = {}
         for sf_fieldname, value in fields.items():
+            if not sf_fieldname:
+                continue
             # evaluate expressions
             expr = None
             if value.startswith("form:"):
@@ -138,6 +140,8 @@ class SendToSalesforce(Action):
             if isinstance(value, (date, datetime)):
                 # serialize dates and datetimes (not handled by json.dumps)
                 value = value.isoformat()
+            elif isinstance(value, set):
+                value = ";".join(value)
 
             data[sf_fieldname] = value
         return data
