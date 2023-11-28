@@ -70,43 +70,46 @@ class SendToSalesforce(Action):
             sobject = getattr(sf, sobject_name)
             op_name = operation["operation"]
             if op_name == "create":
-                result = sobject.create(data)
-                if result["success"]:
-                    sf_id = result["id"]
-                    logger.info(
-                        "Created {} {} in Salesforce".format(sobject_name, sf_id)
-                    )
-                else:
-                    raise Exception(
-                        "Failed to create {} in Salesforce: {}".format(
-                            sobject_name, result["errors"]
-                        )
-                    )
+                self._create_sf_object(sobject, data)
             elif op_name == "update":
                 sf_id = request.cookies.get("sf_id")
                 if sf_id:
-                    result = sobject.update(sf_id, data)
+                    status = sobject.update(sf_id, data)
+                    if status == 204:
+                        request.response.expireCookie(
+                            "sf_id", path=form.absolute_url_path()
+                        )
+                        logger.info(
+                            "Updated {} {} in Salesforce".format(sobject_name, sf_id)
+                        )
+                    else:
+                        raise Exception(
+                            "Failed to update {} {} in Salesforce: {}".format(
+                                sobject_name, sf_id, status
+                            )
+                        )
                 else:
                     if operation.get("action_if_no_existing_object") == "create":
-                        result = sobject.create(data)
-                        sf_id = result["Id"]
+                        self._create_sf_object(sobject, data)
                     else:
                         raise Exception("No Salesforce object matched for update")
-                if result == 204:
-                    request.response.expireCookie(
-                        "sf_id", path=form.absolute_url_path()
-                    )
-                    logger.info(
-                        "Updated {} {} in Salesforce".format(sobject_name, sf_id)
-                    )
-                else:
-                    raise Exception(
-                        "Failed to update {} {} in Salesforce: {}".format(
-                            sobject_name, sf_id, result
-                        )
-                    )
             else:
                 raise ValueError("Unsupported operation: {}".format(operation))
+
+    def _create_sf_object(self, sobject, data):
+        result = sobject.create(data)
+        if result["success"]:
+            sf_id = result["id"]
+            logger.info(
+                "Created {} {} in Salesforce".format(sobject.name, sf_id)
+            )
+        else:
+            raise Exception(
+                "Failed to create {} in Salesforce: {}".format(
+                    sobject.name, result["errors"]
+                )
+            )
+        return sf_id
 
     def prepare_salesforce_data(self, fields, form_input, expr_context):
         """Collect data for one Salesforce object in the format expected by simple-salesforce
