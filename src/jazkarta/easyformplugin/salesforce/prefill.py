@@ -1,9 +1,12 @@
 from collective.easyform.api import get_actions
+from collective.easyform.api import get_expression
 from collective.easyform.interfaces import IEasyForm
 from collective.easyform.interfaces import IEasyFormForm
 from collective.easyform.fields import superAdapter
+from DateTime import DateTime
 from dateutil.parser import parse
 from simple_salesforce import Salesforce
+from z3c.form.interfaces import IGroup
 from z3c.form.interfaces import IValue
 from zope.component import adapter
 from zope.globalrequest import getRequest
@@ -19,10 +22,7 @@ from .interfaces import IJazkartaEasyformpluginSalesforceLayer
 from .interfaces import ISaveToSalesforce
 
 
-@adapter(
-    IEasyForm, IJazkartaEasyformpluginSalesforceLayer, IEasyFormForm, IField, Interface
-)
-def prefill_value_factory(context, request, view, field, widget):
+def _prefill_value_factory(adapter, context, request, view, field, widget):
     """Return a SalesforcePrefillValue if and only if there is a
     Salesforce action mapping the field
     """
@@ -42,12 +42,24 @@ def prefill_value_factory(context, request, view, field, widget):
     # Didn't find one, fall back to less specific adapter
     adapter = superAdapter(
         IJazkartaEasyformpluginSalesforceLayer,
-        prefill_value_factory,
+        adapter,
         (context, request, view, field, widget),
         name="default",
     )
     if adapter is not None:
         return adapter
+
+
+# Register default value adapter for easyform forms
+@adapter(IEasyForm, IJazkartaEasyformpluginSalesforceLayer, IEasyFormForm, IField, Interface)
+def form_prefill_value_factory(context, request, view, field, widget):
+    return _prefill_value_factory(form_prefill_value_factory, context, request, view, field, widget)
+
+
+# Register the same thing for fields in fieldsets
+@adapter(IEasyForm, IJazkartaEasyformpluginSalesforceLayer, IGroup, IField, Interface)
+def group_prefill_value_factory(context, request, view, field, widget):
+    return _prefill_value_factory(group_prefill_value_factory, context, request, view, field, widget)
 
 
 @implementer(IValue)
@@ -64,22 +76,31 @@ class SalesforcePrefillValue(object):
         self.query_cache = self.request._jazkarta_easyform_sf_queries
 
     def query(self):
-        fields = sorted(self.operation["fields"].keys())
+        fields = sorted(f for f in self.operation["fields"].keys() if f)
         if "Id" not in fields:
             fields = ["Id"] + fields
         sobject = self.operation["sobject"]
         where = self.operation["match_expression"]
+        if where.startswith("python:"):
+            where = get_expression(self.form, where, now=DateTime().ISO8601(), sanitize_soql=sanitize_soql)
         soql = "SELECT {} FROM {} WHERE {}".format(", ".join(fields), sobject, where)
-        if soql not in self.query_cache:
+        item = self.query_cache.get(soql)
+        if item is None:
             sf = Salesforce(**SF_CREDENTIALS)
             result = sf.query(soql)
-            if result["totalSize"] != 1:
-                raise Exception("Didn't find match")
-            self.query_cache[soql] = result["records"][0]
-        item = self.query_cache[soql]
-        self.request.response.setCookie(
-            "sf_id", item["Id"], path=self.form.absolute_url_path()
-        )
+            if result["totalSize"] > 1:
+                raise Exception("Found multiple matches: %s" % soql)
+            elif result["totalSize"] == 0:
+                if self.operation.get("action_if_no_existing_object") == "create":
+                    item = {}
+                else:
+                    raise Exception("Didn't find match: %s" % soql)
+            else:
+                item = result["records"][0]
+                self.request.response.setCookie(
+                    "sf_id", item["Id"], path=self.form.absolute_url_path()
+                )
+            self.query_cache[soql] = item
         return item
 
     def get(self):
@@ -92,8 +113,12 @@ class SalesforcePrefillValue(object):
         return value
 
 
+def sanitize_soql(s):
+    """ Sanitizes a string that will be interpolated into single quotes
+        in a SOQL expression.
+    """
+    return s.replace("'", "\\'")
+
 # to do:
 # - sign the cookie
 # - use object from cookie if form was submitted with an error
-# - handle no match / multiple matches
-# - handle dynamic match expressions

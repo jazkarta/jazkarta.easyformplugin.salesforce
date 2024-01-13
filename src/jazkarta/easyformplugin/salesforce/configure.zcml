@@ -52,7 +52,12 @@
       />
 
   <adapter
-      factory=".prefill.prefill_value_factory"
+      factory=".prefill.form_prefill_value_factory"
+      provides="z3c.form.interfaces.IValue"
+      name="default"
+      />
+  <adapter
+      factory=".prefill.group_prefill_value_factory"
       provides="z3c.form.interfaces.IValue"
       name="default"
       />
