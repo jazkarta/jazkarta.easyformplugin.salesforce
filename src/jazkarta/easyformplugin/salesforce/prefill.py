@@ -37,9 +37,13 @@ def _prefill_value_factory(adapter, context, request, view, field, widget):
                 fields = operation.get("fields", {})
                 for sf_field, expr in fields.items():
                     if expr == "form:%s" % field.__name__:
-                        return SalesforcePrefillValue(form, field, operation, sf_field)
+                        adapter = SalesforcePrefillValue(form, field, operation, sf_field)
+                        value = adapter.get()
+                        if value is not None:
+                            return adapter
+                        break
 
-    # Didn't find one, fall back to less specific adapter
+    # Didn't find a value, fall back to less specific adapter
     adapter = superAdapter(
         IJazkartaEasyformpluginSalesforceLayer,
         adapter,
@@ -83,6 +87,11 @@ class SalesforcePrefillValue(object):
         where = self.operation["match_expression"]
         if where.startswith("python:"):
             where = get_expression(self.form, where, now=DateTime().ISO8601(), sanitize_soql=sanitize_soql)
+        if not where:
+            if self.operation.get("action_if_no_existing_object") == "create":
+                return {}
+            else:
+                raise Exception("Not querying Salesforce, because match_expression is empty")
         soql = "SELECT {} FROM {} WHERE {}".format(", ".join(fields), sobject, where)
         item = self.query_cache.get(soql)
         if item is None:
