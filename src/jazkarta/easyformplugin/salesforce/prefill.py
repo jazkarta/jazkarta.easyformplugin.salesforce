@@ -38,10 +38,10 @@ def _prefill_value_factory(adapter, context, request, view, field, widget):
                 for sf_field, expr in fields.items():
                     if expr == "form:%s" % field.__name__:
                         adapter = SalesforcePrefillValue(form, field, operation, sf_field)
-
-    value = adapter.get()
-    if value is not None:
-        return adapter
+                        value = adapter.get()
+                        if value is not None:
+                            return adapter
+                        break
 
     # Didn't find a value, fall back to less specific adapter
     adapter = superAdapter(
