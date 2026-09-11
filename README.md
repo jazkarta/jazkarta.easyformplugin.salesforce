@@ -29,11 +29,9 @@ and then run `bin/buildout`
 
 You must also make sure the following environment variables are set while running Zope:
 
-* SALESFORCE_USERNAME
-* SALESFORCE_PASSWORD
-* SALESFORCE_TOKEN (if needed)
-* SALESFORCE_DOMAIN: the subdomain to use for authentication to Salesforce,
-  e.g. `login` for production orgs or `test` for sandboxes.
+- SALESFORCE_DOMAIN (don't include .salesforce.com)
+- SALESFORCE_CONSUMER_KEY
+- SALESFORCE_CONSUMER_SECRET
 
 ## Usage
 

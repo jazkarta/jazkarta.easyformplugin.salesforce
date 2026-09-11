@@ -17,15 +17,9 @@ from .interfaces import ISaveToSalesforce
 logger = logging.getLogger(__name__)
 
 SF_CREDENTIALS = {
-    "username": os.environ.get("SALESFORCE_USERNAME"),
-    "password": os.environ.get("SALESFORCE_PASSWORD"),
-    "security_token": os.environ.get("SALESFORCE_TOKEN"),
-    "domain": os.environ.get("SALESFORCE_DOMAIN")
-    or (
-        "test"
-        if os.environ.get("SALESFORCE_SANDBOX", "true").lower() in ("true", "1")
-        else "login"
-    ),
+    "domain": os.environ.get("SALESFORCE_DOMAIN"),
+    "consumer_key": os.environ.get("SALESFORCE_CONSUMER_KEY"),
+    "consumer_secret": os.environ.get("SALESFORCE_CONSUMER_SECRET"),
     "version": "55.0",
 }
 
